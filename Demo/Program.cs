@@ -1,3 +1,6 @@
+using MongoDB.Driver;
+using MongoDB.Bson;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -16,29 +19,33 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+var connectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
+
+if (String.IsNullOrWhiteSpace(connectionString))
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    Console.WriteLine("connection string is empty!");
+    return;
+}
+
+var client = new MongoClient(connectionString);
+var collection = client.GetDatabase("test").GetCollection<BsonDocument>("Users");
+
+var filter = Builders<BsonDocument>.Filter.Empty;
 
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    Console.WriteLine("forecast looking gloomy");
+    var documents = collection.Find(filter).ToList();
+
+    foreach (var d in documents)
+    {
+        Console.WriteLine($"{d}");
+    }
+
+    return documents;
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/mizo/Repos/work/Leep/Demo/Demo.csproj": {}
+    "/home/mizo/Repos/work/Leep/Demo/Demo.csproj": {}
   },
   "projects": {
-    "/Users/mizo/Repos/work/Leep/Demo/Demo.csproj": {
+    "/home/mizo/Repos/work/Leep/Demo/Demo.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/mizo/Repos/work/Leep/Demo/Demo.csproj",
+        "projectUniqueName": "/home/mizo/Repos/work/Leep/Demo/Demo.csproj",
         "projectName": "Demo",
-        "projectPath": "/Users/mizo/Repos/work/Leep/Demo/Demo.csproj",
-        "packagesPath": "/Users/mizo/.nuget/packages/",
-        "outputPath": "/Users/mizo/Repos/work/Leep/Demo/obj/",
+        "projectPath": "/home/mizo/Repos/work/Leep/Demo/Demo.csproj",
+        "packagesPath": "/home/mizo/.nuget/packages/",
+        "outputPath": "/home/mizo/Repos/work/Leep/Demo/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/mizo/.nuget/NuGet/NuGet.Config"
+          "/home/mizo/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -47,6 +47,10 @@
               "target": "Package",
               "version": "[8.0.6, )"
             },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[2.27.0, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
@@ -71,7 +75,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.302/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,0 +1,64 @@
+*** Centralised Peer to Peer, Community to Community knowledge exchange ***
+
+- Communities. Everything goes inside Communities.
+- ? Somethings are shared between Communities.
+- Communities have members.
+- Members belong to multiple Communities.
+- ? Members have friends that could be inside or outside 
+	the same Communities. 
+- ? Members are invited to join Communities.
+- Communities have admins, They manage who gets invited,
+	and further moderate their Communities.
+- Admins are still normal members of Communities that have 
+	elevated permissions over other members.
+- Communities can organize events.
+- Events are displayed on a calendar. Where every member
+	will have access to view and participate in events.
+- ? Members can subscribe or unsubscribe from events.
+	They can clear their calendar.
+- ? Members have their own calendars. Communities Have their own 
+	Calendars.
+- Events have discussion threads.
+- Recommendation Algorithm for featured content.
+- Recommendation Algorithm for User Interest (questions,
+	topics, events, articles, friends, communities,...).
+- New Members Algorithm with weights for every 
+	user (i.e. every user sees different results).
+- Next Leep meetup section.
+- Users have notifications.
+- Sections are removed when empty.
+- ? Events are global?
+- ? Users can follow other users.
+- Tagging system.
+- Comments and replies.
+- ? Comments and replies on what. On an event.
+- Library content can have discussion threads, 
+	with comments and replies.
+- Is that the same discussion method used on q and a 's.
+- ? Needs and opportunities, or are they the same thing.
+- ? You can follow questions now.
+- Users are floating and are not in fact tied to a Community.
+- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,5 +1,11 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using Demo.models;
+using Newtonsoft.Json;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Fluent;
+using Microsoft.Azure.Cosmos.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +25,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var connectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
+var connectionString = Environment.GetEnvironmentVariable("CosmosString");
 
 if (String.IsNullOrWhiteSpace(connectionString))
 {
@@ -27,22 +33,25 @@ if (String.IsNullOrWhiteSpace(connectionString))
     return;
 }
 
-var client = new MongoClient(connectionString);
-var collection = client.GetDatabase("test").GetCollection<BsonDocument>("Users");
+CosmosSerializationOptions serializerOptions = new()
+{
+    PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
+};
 
-var filter = Builders<BsonDocument>.Filter.Empty;
+using CosmosClient client = new CosmosClientBuilder(connectionString)
+    .WithSerializerOptions(serializerOptions)
+    .Build();
 
-app.MapGet("/weatherforecast", () =>
+var containter = client.GetContainer("shared", "Leep.User");
+
+app.MapGet("/weatherforecast", async () =>
 {
     Console.WriteLine("forecast looking gloomy");
-    var documents = collection.Find(filter).ToList();
-
-    foreach (var d in documents)
-    {
-        Console.WriteLine($"{d}");
-    }
-
-    return documents;
+    var item = new { id = "4", name = "forecast man", interests = new List<string>(["weather", "sadness"]) };
+    var jitem = JsonConvert.SerializeObject(item);
+    var res = await containter.UpsertItemAsync(jitem, new PartitionKey(item.id));
+    
+    Console.WriteLine(res.StatusCode);
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();

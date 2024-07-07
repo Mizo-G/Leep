@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/mizo/Repos/work/Leep/Demo/Demo.csproj": {}
+    "/Users/mizo/Repos/work/Leep/Demo/Demo.csproj": {}
   },
   "projects": {
-    "/home/mizo/Repos/work/Leep/Demo/Demo.csproj": {
+    "/Users/mizo/Repos/work/Leep/Demo/Demo.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/mizo/Repos/work/Leep/Demo/Demo.csproj",
+        "projectUniqueName": "/Users/mizo/Repos/work/Leep/Demo/Demo.csproj",
         "projectName": "Demo",
-        "projectPath": "/home/mizo/Repos/work/Leep/Demo/Demo.csproj",
-        "packagesPath": "/home/mizo/.nuget/packages/",
-        "outputPath": "/home/mizo/Repos/work/Leep/Demo/obj/",
+        "projectPath": "/Users/mizo/Repos/work/Leep/Demo/Demo.csproj",
+        "packagesPath": "/Users/mizo/.nuget/packages/",
+        "outputPath": "/Users/mizo/Repos/work/Leep/Demo/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/mizo/.nuget/NuGet/NuGet.Config"
+          "/Users/mizo/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -47,9 +47,17 @@
               "target": "Package",
               "version": "[8.0.6, )"
             },
+            "Microsoft.Azure.Cosmos": {
+              "target": "Package",
+              "version": "[3.41.0, )"
+            },
             "MongoDB.Driver": {
               "target": "Package",
               "version": "[2.27.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -75,7 +83,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

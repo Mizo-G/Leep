@@ -38,7 +38,40 @@
 - ? Needs and opportunities, or are they the same thing.
 - ? You can follow questions now.
 - Users are floating and are not in fact tied to a Community.
-- 
+- Content (ie. posts) - comments - replies 
+- Uploading content includes: links, pdfs, yt video links, images.
+- Users can follow content
+
+
+- to start 
+	preliminary user info, socials or pros
+	preliminary enterprise info for socials
+	directory, for viewing all users
+	content, with comments and replies
+	events
+	library, with comments and replies
+	user profile
+	follow content, questions, events, people
+	recommendation engine for content, events, questions
+	new members algorithm complete with weights for every user
+
+- later
+	opportunities 
+	admins, with other roles
+	auth
+	linkedin
+	questions, complete with comments and replies
+	content, with comments and replies
+
+
+- now
+	user info
+	enterprise info
+	auth, with linkedin
+	events
+	opportunities
+	directory
+	library
 
 
 

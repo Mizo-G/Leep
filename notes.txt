@@ -1,5 +1,24 @@
 *** Centralised Peer to Peer, Community to Community knowledge exchange ***
 
+current goals:
+	- Cosmos db test pagination.
+		(use continuation token to request a new page)
+	- Generic reader for containers with sql query that
+		accepts pagination and max item count per page
+	- Generic interface for every model to connect to 
+		its db container
+	- Create init schema for: Users, Directories, 
+			Events, Library, Enterprise and Roles
+	- Create api endpoints 
+	- Connect with Blazor frontend
+	- Optimize queries and endpoint responses
+	- Update Schema Defentions
+	- Initial Documents for api consumption
+	- Blazor Testing
+
+
+
+
 - Communities. Everything goes inside Communities.
 - ? Somethings are shared between Communities.
 - Communities have members.
@@ -72,6 +91,7 @@
 	opportunities
 	directory
 	library
+	follow system?
 
 
 

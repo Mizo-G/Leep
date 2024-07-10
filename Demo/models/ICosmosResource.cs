@@ -1,10 +1,8 @@
-using Newtonsoft.Json;
-
 namespace Demo.Models
 {
-public class ICosmosResource
-{
-    [JsonProperty("id")]
-    public string Id { get; set; } = "";
-}
+    public interface ICosmosResource
+    {
+        public string Id { get; set; }
+        public string PartitionKey { get; }
+    }
 }

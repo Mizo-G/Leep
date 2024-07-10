@@ -1,4 +1,3 @@
-using Demo.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using User = Demo.Models.User;
@@ -7,13 +6,13 @@ namespace Demo.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UsersController : ControllerBase 
+public class UsersController : ControllerBase
 {
-   private readonly CosmosDB db;
+    private readonly CosmosDB<User> _db;
 
     public UsersController(CosmosContainerFactory containerFactory)
     {
-        db = new CosmosDB(containerFactory, "Leep.User");
+        _db = new CosmosDB<User>(containerFactory, "Leep.User");
     }
 
 
@@ -25,9 +24,8 @@ public class UsersController : ControllerBase
             var query = new QueryDefinition(
                 query: "SELECT * FROM c"
             );
-            var result = await db.QueryItems<User>(query);
+            var result = await _db.QueryItems(query);
             if (result == null) { return BadRequest("Results are null"); }
-            if (result.Count == 0) { return NoContent(); }
             return Ok(result);
         }
         catch (CosmosException ce)
@@ -39,6 +37,10 @@ public class UsersController : ControllerBase
         {
             return BadRequest($"A non nullable value was found to be null - {e.Message}");
         }
+        catch (Exception e)
+        {
+            return BadRequest($"An exception has occured - {e.Message}");
+        }
     }
 
     [HttpGet("{id}")]
@@ -48,20 +50,74 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create(int id)
+    public async Task<IActionResult> Create([FromBody] User item)
     {
-        return Ok($"Hello from MyController with ID = {id}");
+        try
+        {
+            var (status, result) = await _db.CreateItem(item);
+            if (!status) return BadRequest("Failed to Create Item");
+            return Ok(result?.Id);
+        }
+        catch (CosmosException ce)
+        {
+            Console.WriteLine(ce.Message);
+            return BadRequest($"A database exception occured while creating data {ce.Message}");
+        }
+        catch (ArgumentNullException e)
+        {
+            return BadRequest($"A non nullable value was found to be null - {e.Message}");
+        }
+        catch (Exception e)
+        {
+            return BadRequest($"An exception has occured - {e.Message}");
+        }
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id)
+    public async Task<IActionResult> Update([FromBody] User item)
     {
-        return Ok($"Hello from MyController with ID = {id}");
+        try
+        {
+            var (status, result) = await _db.UpdateItem(item);
+            if (!status) return BadRequest("Failed to Update Item");
+            return Ok(result?.Id);
+        }
+        catch (CosmosException ce)
+        {
+            Console.WriteLine(ce.Message);
+            return BadRequest($"A database exception occured while updating data {ce.Message}");
+        }
+        catch (ArgumentNullException e)
+        {
+            return BadRequest($"A non nullable value was found to be null - {e.Message}");
+        }
+        catch (Exception e)
+        {
+            return BadRequest($"An exception has occured - {e.Message}");
+        }
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(string id, string partitionKey)
     {
-        return Ok($"Hello from MyController with ID = {id}");
+        try
+        {
+            var status = await _db.DeleteItem(id, partitionKey);
+            if (!status) return BadRequest("Failed to Delete Item");
+            return Ok();
+        }
+        catch (CosmosException ce)
+        {
+            Console.WriteLine(ce.Message);
+            return BadRequest($"A database exception occured while deleting data {ce.Message}");
+        }
+        catch (ArgumentNullException e)
+        {
+            return BadRequest($"A non nullable value was found to be null - {e.Message}");
+        }
+        catch (Exception e)
+        {
+            return BadRequest($"An exception has occured - {e.Message}");
+        }
     }
 }

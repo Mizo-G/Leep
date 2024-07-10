@@ -2,42 +2,26 @@ using Newtonsoft.Json;
 
 namespace Demo.Models
 {
-
     public enum UserType
     {
         Professional,
         Social_Entrepreneur
     }
-
-    public class Location
+    public enum UserRole
     {
-
+        Admin,
+        Member
     }
 
-    public interface IFollowable
-    {
-
-    }
-
-    public class Followed
-    {
-        public string ContentId { get; private set; } = "";
-        public DateTime FollowingSince { get; private set; }
-
-        public void Follow<T>(T content) where T : ICosmosResource, IFollowable
-        {
-            ContentId = content.Id;
-            FollowingSince = DateTime.UtcNow;
-        }
-    }
-
-    public class User : ICosmosResource, IFollowable
+    public class User : ICosmosResource
     {
         [JsonProperty("id")]
         public string Id { get; set; } = "";
         public string PartitionKey => Id;
         [JsonProperty("userType")]
         public UserType UserType { get; set; }
+        [JsonProperty("userName")]
+        public string? UserName { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; } = "";
         [JsonProperty("profileImage")]
@@ -66,31 +50,23 @@ namespace Demo.Models
         public List<string>? NeedHelpWith { get; set; }
         [JsonProperty("following")]
         public List<Followed>? Following { get; set; }
-
+        [JsonProperty("contactInfo")]
+        public ContactInfo? ContactInfo { get; set; }
+        [JsonProperty("keepSocialsPrivate")]
+        public bool keepSocialsPrivate { get; set; } = false;
+        [JsonProperty("keepPersonalInfoPrivate")]
+        public bool keepPersonalInfoPrivate { get; set; } = true;
+        [JsonProperty("emailVerified")]
+        public bool EmailVerified { get; set; } = false;
+        [JsonProperty("hash")]
+        public string? Hash { get; set; }
         public User()
         {
         }
 
-        public User(string id, string name, List<string> interests)
+        public User(string email)
         {
-            Id = id;
-            Name = name;
-            Interests = interests;
-        }
-
-        static public User Copy(User u)
-        {
-            if (u == null)
-                return new User();
-            var newUser = new User
-            {
-                Name = u.Name
-            };
-            if (u.Interests != null && u.Interests.Count() > 0)
-            {
-                newUser.Interests = u.Interests.Select(i => i).ToList();
-            }
-            return newUser;
+            ContactInfo = new ContactInfo { Email = email };
         }
     }
 }

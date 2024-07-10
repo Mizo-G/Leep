@@ -57,7 +57,7 @@ public class CosmosDB<T> where T : ICosmosResource
 
     public async Task<(bool, T?)> UpdateItem(T item)
     {
-        var result = await _container.UpsertItemAsync<T>(item, new PartitionKey(item.PartitionKey));
+        var result = await _container.ReplaceItemAsync<T>(item, item.Id, new PartitionKey(item.Id));
         if (result == null) throw new ArgumentNullException(nameof(result), "Update Result is null");
         if (result.Resource == null) throw new ArgumentNullException(nameof(result.Resource), "Result Source is null");
         var code = result.StatusCode;

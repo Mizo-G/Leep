@@ -60,6 +60,9 @@ namespace Demo.Models
         public bool EmailVerified { get; set; } = false;
         [JsonProperty("hash")]
         public string? Hash { get; set; }
+        [JsonProperty("completionPercentage")]
+        public int CompletionPercentage { get; set; }
+
         public User()
         {
         }
@@ -68,5 +71,35 @@ namespace Demo.Models
         {
             ContactInfo = new ContactInfo { Email = email };
         }
+
+        public (bool, string) IsEssentialInfoFilled()
+        {
+            var user = this;
+            if (String.IsNullOrWhiteSpace(user.Name)) return (false, $"{nameof(user.Name)} is required, but was not provided");
+            if (String.IsNullOrWhiteSpace(user.UserName)) return (false, $"{nameof(user.UserName)} is required, but was not provided");
+            if (!user.EmailVerified) return (false, $"Email needs to be verified.");
+            if (user.ContactInfo is null) return (false, $"An email needs to be provided and verified before User can be added");
+            if (String.IsNullOrWhiteSpace(user.ContactInfo.Email)) return (false, $"An email needs to be provided and verified before User can be added");
+
+            return (true, "");
+        }
+
+        public int CalculateCompletionPercentage()
+        {
+            int toComplete = 10;
+            int completed = 0;
+
+            var user = this;
+            if (!String.IsNullOrWhiteSpace(user.Name)) completed++;
+            if (!String.IsNullOrWhiteSpace(user.UserName)) completed++;
+            if (user.EmailVerified) completed++;
+            if (!String.IsNullOrWhiteSpace(user.ContactInfo?.Email)) completed++;
+
+            // TODO =>
+            // add the rest of the feilds later
+
+            return completed * 100 / toComplete;
+        }
+
     }
 }

@@ -43,10 +43,29 @@ public class UsersController : ControllerBase
         }
     }
 
-    [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    [HttpGet("{id}/{pk}")]
+    public async Task<IActionResult> GetById(string id, string pk)
     {
-        return Ok($"Hello from MyController with ID = {id}");
+        try
+        {
+            var item = await _db.ReadItem(id, pk);
+            if (String.IsNullOrWhiteSpace(item.Id)) return NotFound($"Couldn't find User with id {id} and partition key {pk}");
+            return Ok(item);
+        }
+        catch (CosmosException ce)
+        {
+            Console.WriteLine(ce.Message);
+            return BadRequest("A database exception occured while retrieving data");
+        }
+        catch (ArgumentNullException e)
+        {
+            return BadRequest($"A non nullable value was found to be null - {e.Message}");
+        }
+        catch (Exception e)
+        {
+            return BadRequest($"An exception has occured - {e.Message}");
+        }
+
     }
 
     [HttpPost]
@@ -54,7 +73,11 @@ public class UsersController : ControllerBase
     {
         try
         {
-            var (status, result) = await _db.CreateItem(item);
+            bool status;
+            (status, var err) = item.IsEssentialInfoFilled();
+            if (!status) return BadRequest($"{err}. Please provied all required inforamation.");
+            item.CompletionPercentage = item.CalculateCompletionPercentage();
+            (status, var result) = await _db.CreateItem(item);
             if (!status) return BadRequest("Failed to Create Item");
             return Ok(result?.Id);
         }
@@ -73,12 +96,16 @@ public class UsersController : ControllerBase
         }
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromBody] User item)
+    [HttpPut("{id}/{partitionKey}")]
+    public async Task<IActionResult> Update(string id, string partitionKey, [FromBody] User item)
     {
         try
         {
-            var (status, result) = await _db.UpdateItem(item);
+            bool status;
+            (status, var err) = item.IsEssentialInfoFilled();
+            if (!status) return BadRequest($"{err}. Please provied all required inforamation.");
+            item.CompletionPercentage = item.CalculateCompletionPercentage();
+            (status, var result) = await _db.UpdateItem(id, partitionKey, item);
             if (!status) return BadRequest("Failed to Update Item");
             return Ok(result?.Id);
         }
@@ -97,7 +124,7 @@ public class UsersController : ControllerBase
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}/{partitionKey}")]
     public async Task<IActionResult> Delete(string id, string partitionKey)
     {
         try

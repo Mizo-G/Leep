@@ -1528,19 +1528,19 @@
     ]
   },
   "packageFolders": {
-    "/home/mizo/.nuget/packages/": {}
+    "/Users/mizo/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/mizo/Repos/work/Leep/Demo/Demo.csproj",
+      "projectUniqueName": "/Users/mizo/Repos/work/Leep/Demo/Demo.csproj",
       "projectName": "Demo",
-      "projectPath": "/home/mizo/Repos/work/Leep/Demo/Demo.csproj",
-      "packagesPath": "/home/mizo/.nuget/packages/",
-      "outputPath": "/home/mizo/Repos/work/Leep/Demo/obj/",
+      "projectPath": "/Users/mizo/Repos/work/Leep/Demo/Demo.csproj",
+      "packagesPath": "/Users/mizo/.nuget/packages/",
+      "outputPath": "/Users/mizo/Repos/work/Leep/Demo/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/mizo/.nuget/NuGet/NuGet.Config"
+        "/Users/mizo/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -1605,7 +1605,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.301/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.302/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

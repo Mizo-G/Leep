@@ -30,8 +30,7 @@ public class UsersController : ControllerBase
         }
         catch (CosmosException ce)
         {
-            Console.WriteLine(ce.Message);
-            return BadRequest("A database exception occured while retrieving data");
+            return NotFound($"A database exception occured while retrieving data: {ce.Message}");
         }
         catch (ArgumentNullException e)
         {
@@ -54,8 +53,7 @@ public class UsersController : ControllerBase
         }
         catch (CosmosException ce)
         {
-            Console.WriteLine(ce.Message);
-            return BadRequest("A database exception occured while retrieving data");
+            return NotFound($"A database exception occured while retrieving data - {ce.Message}");
         }
         catch (ArgumentNullException e)
         {
@@ -83,7 +81,6 @@ public class UsersController : ControllerBase
         }
         catch (CosmosException ce)
         {
-            Console.WriteLine(ce.Message);
             return BadRequest($"A database exception occured while creating data {ce.Message}");
         }
         catch (ArgumentNullException e)
@@ -111,8 +108,7 @@ public class UsersController : ControllerBase
         }
         catch (CosmosException ce)
         {
-            Console.WriteLine(ce.Message);
-            return BadRequest($"A database exception occured while updating data {ce.Message}");
+            return NotFound($"A database exception occured while updating data {ce.Message}");
         }
         catch (ArgumentNullException e)
         {
@@ -136,7 +132,7 @@ public class UsersController : ControllerBase
         catch (CosmosException ce)
         {
             Console.WriteLine(ce.Message);
-            return BadRequest($"A database exception occured while deleting data {ce.Message}");
+            return NotFound($"A database exception occured while deleting data {ce.Message}");
         }
         catch (ArgumentNullException e)
         {

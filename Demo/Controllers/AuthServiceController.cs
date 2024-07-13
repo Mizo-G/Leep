@@ -1,22 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 
+public record SignInRequest(string Email, string Password);
+
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly AuthenticationService _authService;
+    private readonly AuthService _authService;
 
-    public AuthController(AuthenticationService authService)
+    public AuthController(AuthService authService)
     {
         _authService = authService;
     }
 
     [HttpPost("signin")]
-    public async Task<IActionResult> SignInWithEmail([FromBody] string email, [FromBody] string password)
+    public async Task<IActionResult> SignInWithEmail([FromBody] SignInRequest request)
     {
         try
         {
+            var (email, password) = request;
             var (user, reasonIfFailed) = await _authService.LoginInWithEmail(email, password);
             if (user == null) return Unauthorized(reasonIfFailed);
             return Ok(user);
@@ -66,8 +69,8 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpPost("resendotp")]
-    public async Task<IActionResult> ResendOtp([FromBody] string id, [FromBody] string email)
+    [HttpPost("resendotp/{id}")]
+    public async Task<IActionResult> ResendOtp(string id, [FromBody] string email)
     {
         try
         {
@@ -91,10 +94,11 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register-user-password")]
-    public async Task<IActionResult> RegisterPassword([FromBody] string id, [FromBody] string password)
+    public async Task<IActionResult> RegisterPassword([FromBody] SignInRequest request)
     {
         try
         {
+            var (id, password) = request;
             var status = await _authService.RegisterUserPassword(id, password);
             if (!status) return BadRequest("Failed to register user");
             return Ok();
@@ -141,4 +145,3 @@ public class AuthController : ControllerBase
         }
     }
 }
-

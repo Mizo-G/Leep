@@ -17,7 +17,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var (user, reasonIfFailed) = await _authService.SignInWithEmail(email, password);
+            var (user, reasonIfFailed) = await _authService.LoginInWithEmail(email, password);
             if (user == null) return Unauthorized(reasonIfFailed);
             return Ok(user);
         }
@@ -47,33 +47,8 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var result = await _authService.RegisterUnverifiedUser(email);
-            if (!result) return BadRequest("Failed to register user");
-            return Ok();
-        }
-        catch (CosmosException ce)
-        {
-            Console.WriteLine(ce.Message);
-            return BadRequest($"A database exception occured while deleting data {ce.Message}");
-        }
-        catch (ArgumentNullException e)
-        {
-            return BadRequest($"A non nullable value was found to be null - {e.Message}");
-        }
-        catch (Exception e)
-        {
-            return BadRequest($"An exception has occured - {e.Message}");
-        }
-    } 
-
-
-    [HttpPost("register-user-password")]
-    public async Task<IActionResult> RegisterPassword([FromBody] string id, [FromBody] string password)
-    {
-        try
-        {
-            var result = await _authService.RegisterUserPassword(id, password);
-            if (!result) return BadRequest("Failed to register user");
+            var (status, err) = await _authService.RegisterUnverifiedUser(email);
+            if (!status) return BadRequest($"Failed to register user. Reason: {err}");
             return Ok();
         }
         catch (CosmosException ce)
@@ -91,13 +66,64 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpPost("verify")]
-    public async Task<IActionResult> VerifyEmail([FromBody] string id)
+    [HttpPost("resendotp")]
+    public async Task<IActionResult> ResendOtp([FromBody] string id, [FromBody] string email)
     {
         try
         {
-            var result = await _authService.VerifyEmail(id);
-            if (!result) return BadRequest("Failed to verify email");
+            var status = await _authService.ResendOtp(id, email);
+            if (!status) return BadRequest("Failed to register user");
+            return Ok();
+        }
+        catch (CosmosException ce)
+        {
+            Console.WriteLine(ce.Message);
+            return BadRequest($"A database exception occured while deleting data {ce.Message}");
+        }
+        catch (ArgumentNullException e)
+        {
+            return BadRequest($"A non nullable value was found to be null - {e.Message}");
+        }
+        catch (Exception e)
+        {
+            return BadRequest($"An exception has occured - {e.Message}");
+        }
+    }
+
+    [HttpPost("register-user-password")]
+    public async Task<IActionResult> RegisterPassword([FromBody] string id, [FromBody] string password)
+    {
+        try
+        {
+            var status = await _authService.RegisterUserPassword(id, password);
+            if (!status) return BadRequest("Failed to register user");
+            return Ok();
+        }
+        catch (CosmosException ce)
+        {
+            Console.WriteLine(ce.Message);
+            return BadRequest($"A database exception occured while deleting data {ce.Message}");
+        }
+        catch (ArgumentNullException e)
+        {
+            return BadRequest($"A non nullable value was found to be null - {e.Message}");
+        }
+        catch (Exception e)
+        {
+            return BadRequest($"An exception has occured - {e.Message}");
+        }
+    }
+
+    [HttpPost("verify/{id}")]
+    public async Task<IActionResult> VerifyEmail(string id, [FromBody] string code)
+    {
+        try
+        {
+            bool status;
+            status = await _authService.VerifyOtp(id, code);
+            if (!status) return Forbid("Failed to verify otp");
+            status = await _authService.VerifyEmail(id);
+            if (!status) return BadRequest("Failed to verify email");
             return Ok();
         }
         catch (CosmosException ce)

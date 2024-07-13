@@ -51,19 +51,20 @@ public class CosmosDB<T> where T : ICosmosResource
         var resource = result.Resource;
         Console.WriteLine(code);
         Console.WriteLine(resource.Id);
-        if (!String.IsNullOrWhiteSpace(resource.Id) && (code == HttpStatusCode.OK || code == HttpStatusCode.Created)) return (true, result.Resource);
+        if (!String.IsNullOrWhiteSpace(resource.Id) && code == HttpStatusCode.Created) return (true, result.Resource);
         return (false, default(T));
     }
 
     public async Task<(bool, T?)> UpdateItem(string id, string partitionKey, T item)
     {
+        item.Id = id;
+        item.PartitionKey = partitionKey;
         var result = await _container.ReplaceItemAsync<T>(item, id, new PartitionKey(partitionKey));
         if (result == null) throw new ArgumentNullException(nameof(result), "Update Result is null");
         if (result.Resource == null) throw new ArgumentNullException(nameof(result.Resource), "Result Source is null");
         var code = result.StatusCode;
         var resource = result.Resource;
-        Console.WriteLine(code);
-        if (!String.IsNullOrWhiteSpace(resource.Id) && (code == HttpStatusCode.OK || code == HttpStatusCode.Created)) return (true, resource);
+        if (!String.IsNullOrWhiteSpace(resource.Id) && (code == HttpStatusCode.OK)) return (true, resource);
         return (false, default(T));
     }
 

@@ -6,12 +6,12 @@ public class Location
     [JsonProperty("country")]
     public string Country  { get; set; }
 
-    [JsonProperty("Governrate")]
-    public string Governrate  { get; set; }
+    [JsonProperty("governorate")]
+    public string Governorate  { get; set; }
 
-    public Location(string country, string governrate)
+    public Location(string country, string governorate)
     {
         Country = country;
-        Governrate = governrate;
+        Governorate = governorate;
     }
 }

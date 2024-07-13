@@ -1,5 +1,23 @@
 *** Centralised Peer to Peer, Community to Community knowledge exchange ***
 
+current current goals:
+	- User Type and Roles
+	- Admins can operate on Users
+	- Users can only operate on themselves to an extent
+	- Users have to login before they operate on anything
+	- Users can create a new User that represents them, Sign In
+	- Users need to provide a minumum amount of data to Sign In
+	- They can continue the process anytime
+	- Check with hagar to see what data is required
+
+	- Auth Controller
+	- Auth Routes based on user role
+	- Send mails
+	- Login with LinkedIn
+
+
+
+
 current goals:
 	- Cosmos db test pagination.
 		(use continuation token to request a new page)

@@ -25,7 +25,6 @@ builder.Services.AddSingleton<CosmosClient>(serviceProvider =>
 });
 
 builder.Services.AddSingleton<CosmosContainerFactory>();
-builder.Services.AddTransient<AuthService>();
 
 var app = builder.Build();
 

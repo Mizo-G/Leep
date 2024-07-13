@@ -16,9 +16,9 @@ namespace Demo.Models
     public class User : ICosmosResource
     {
         [JsonProperty("id")]
-        public string Id { get; set; }
-        [JsonProperty("partitionKey")]
-        public string PartitionKey { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        [JsonProperty("userId")]
+        public string UserId { get; set; } 
         [JsonProperty("userType")]
         public UserType UserType { get; set; }
         [JsonProperty("userName")]
@@ -63,17 +63,16 @@ namespace Demo.Models
         public int CompletionPercentage { get; set; }
         [JsonProperty("createdDate")]
         public DateTime CreatedDate  { get; set ; } = DateTime.Now;
-
+        [JsonProperty("docType")]
+        public string DocType { get; set; } = "user";
         public User()
         {
-            Id = Guid.NewGuid().ToString();
-            PartitionKey = Id;
+            UserId = Id;
         }
 
         public User(string email)
         {
-            Id = Guid.NewGuid().ToString();
-            PartitionKey = Id;
+            UserId = Id;
             ContactInfo = new ContactInfo { Email = email };
         }
 

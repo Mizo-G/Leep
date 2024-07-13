@@ -22,7 +22,7 @@ public class UsersController : ControllerBase
         try
         {
             var query = new QueryDefinition(
-                query: "SELECT * FROM c"
+                query: "SELECT * FROM c WHERE c.docType = 'user'"
             );
             var result = await _db.QueryItems(query);
             if (result == null) { return BadRequest("Results are null"); }
@@ -75,7 +75,7 @@ public class UsersController : ControllerBase
             (status, var err) = item.IsEssentialInfoFilled();
             if (!status) return BadRequest($"{err}. Please provied all required inforamation.");
             item.CompletionPercentage = item.CalculateCompletionPercentage();
-            (status, var result) = await _db.CreateItem(item);
+            (status, var result) = await _db.CreateItem(item, item.UserId);
             if (!status) return BadRequest("Failed to Create Item");
             return Ok(result?.Id);
         }

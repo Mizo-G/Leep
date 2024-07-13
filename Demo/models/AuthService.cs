@@ -7,46 +7,46 @@ using User = Demo.Models.User;
 
 public class Otp : ICosmosResource
 {
-    [JsonIgnore]
-    public string Id { get; set; } = "";
+    [JsonProperty("id")]
+    public string Id { get; set; } = Guid.NewGuid().ToString();
     [JsonProperty("userId")]
     public string UserId { get; set; }
-    [JsonProperty("partitionKey")]
-    public string PartitionKey { get; set; }
     [JsonProperty("email")]
     public string Email { get; set; }
     [JsonProperty("code")]
     public string Code { get; set; }
     [JsonProperty("createdDate")]
     public DateTime CreatedDate { get; set; }
+    [JsonProperty("docType")]
+    private string DocType { get; set; } = "otp";
     public int ttl { get; set; }
 
 
     public Otp(string userId, string email, string code)
     {
         UserId = userId;
-        PartitionKey = userId;
         Code = code;
         Email = email;
         CreatedDate = DateTime.UtcNow;
-        ttl = 60 * 10; // 10 minutes, then cosmos auto deletes the record
+        ttl = 60 * 100; // 10 minutes, then cosmos auto deletes the record
     }
+
 }
 
 public class AuthService
 {
-    private readonly CosmosDB<User> _userDb;
+    public readonly CosmosDB<User> _userDb;
     private readonly CosmosDB<Otp> _otpDb;
 
-    public AuthService(CosmosContainerFactory containerFactory)
+    public AuthService(CosmosDB<User> db, CosmosDB<Otp> otpdb)
     {
-        _userDb = new CosmosDB<User>(containerFactory, "Leep.Users");
-        _otpDb = new CosmosDB<Otp>(containerFactory, "Leep.Otp");
+        _userDb = db; 
+        _otpDb = otpdb; 
     }
 
     public async Task<(User?, string)> LoginInWithEmail(string email, string password)
     {
-        var query = new QueryDefinition("SELECT * FROM c WHERE c.email = @Email")
+        var query = new QueryDefinition("SELECT * FROM c WHERE c.docType = 'user' and c.contactInfo.email = @Email")
             .WithParameter("@Email", email);
         var users = await _userDb.QueryItems(query);
 
@@ -78,7 +78,7 @@ public class AuthService
     {
         bool status;
         var user = new User(email);
-        (status, _) = await _userDb.CreateItem(user);
+        (status, _) = await _userDb.CreateItem(user, user.UserId);
         if (!status) return (false, $"Couldn't find user with email {email}");
         status = await SendOtp(user.Id, email);
         if (!status) return (false, $"Couldn't send otp to email {email}");
@@ -88,7 +88,7 @@ public class AuthService
     private string GenerateOtp()
     {
         var random = new Random();
-        return random.Next(100_000, 1_000_000).ToString();
+        return random.Next(100_000, 1_000_000).ToString(); //6 digits
     }
 
     private async Task<bool> SendOtp(string userId, string email)
@@ -96,34 +96,46 @@ public class AuthService
         bool status;
         var code = GenerateOtp();
         var otp = new Otp(userId, email, code);
-        (status, _) = await _otpDb.CreateItem(otp);
+        (status, _) = await _otpDb.CreateItem(otp, otp.UserId);
         return status;
     }
 
     public async Task<bool> ResendOtp(string userId, string email)
     {
         bool status;
+        var query = new QueryDefinition(
+            "select * from c where c.docType = 'otp' and c.userId = @uid"
+        ).WithParameter("@uid", userId);
+        var otps = await _otpDb.QueryItems(query);
+        var oldOtp = otps.First();
+        if (oldOtp is null) return false;
         var code = GenerateOtp();
         var otp = new Otp(userId, email, code);
-        (status, _) = await _otpDb.UpsertItem(otp);
+        otp.Id = oldOtp.Id;
+        (status, _) = await _otpDb.UpdateItem(oldOtp.Id, oldOtp.UserId, otp);
         return status;
     }
 
     public async Task<bool> VerifyOtp(string userId, string code)
     {
-        var otp = await _otpDb.ReadItem(userId, userId);
+        var query = new QueryDefinition(
+            "select * from c where c.docType = 'otp' and c.userId = @uid"
+        ).WithParameter("@uid", userId);
+        var otps = await _otpDb.QueryItems(query);
+        var otp = otps.First();
+        if (otp == null) return false;
         if (otp.Code == code) return true;
         return false;
     }
 
     public async Task<bool> RegisterUserPassword(string userId, string password)
     {
-        var user = await _userDb.ReadItem(userId);
+        var user = await _userDb.ReadItem(userId, userId);
         if (user == null) return false;
 
         user.Hash = HashPassword(password);
 
-        var (status, _) = await _userDb.UpdateItem(user.Id, user.PartitionKey, user);
+        var (status, _) = await _userDb.UpdateItem(user.Id, userId, user);
         return status;
     }
 
@@ -133,7 +145,7 @@ public class AuthService
         if (user == null) return false;
 
         user.EmailVerified = true;
-        var (status, _) = await _userDb.UpdateItem(user.Id, user.PartitionKey, user);
+        var (status, _) = await _userDb.UpdateItem(user.Id, user.UserId, user);
 
         return status;
     }

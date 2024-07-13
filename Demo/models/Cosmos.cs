@@ -42,9 +42,9 @@ public class CosmosDB<T> where T : ICosmosResource
         return result.Resource;
     }
 
-    public async Task<(bool, T?)> CreateItem(T item)
+    public async Task<(bool, T?)> CreateItem(T item, string pk)
     {
-        var result = await _container.CreateItemAsync(item, new PartitionKey(item.PartitionKey));
+        var result = await _container.CreateItemAsync(item, new PartitionKey(pk));
         if (result == null) throw new ArgumentNullException(nameof(result), "Create Result is null");
         if (result.Resource == null) throw new ArgumentNullException(nameof(result.Resource), "Result Source is null");
         var code = result.StatusCode;
@@ -58,7 +58,6 @@ public class CosmosDB<T> where T : ICosmosResource
     public async Task<(bool, T?)> UpdateItem(string id, string partitionKey, T item)
     {
         item.Id = id;
-        item.PartitionKey = partitionKey;
         var result = await _container.ReplaceItemAsync<T>(item, id, new PartitionKey(partitionKey));
         if (result == null) throw new ArgumentNullException(nameof(result), "Update Result is null");
         if (result.Resource == null) throw new ArgumentNullException(nameof(result.Resource), "Result Source is null");
@@ -68,9 +67,9 @@ public class CosmosDB<T> where T : ICosmosResource
         return (false, default(T));
     }
 
-    public async Task<(bool, T?)> UpsertItem(T item)
+    public async Task<(bool, T?)> UpsertItem(T item, string pk)
     {
-        var result = await _container.UpsertItemAsync<T>(item, new PartitionKey(item.PartitionKey));
+        var result = await _container.UpsertItemAsync<T>(item, new PartitionKey(pk));
         if (result == null) throw new ArgumentNullException(nameof(result), "Update Result is null");
         if (result.Resource == null) throw new ArgumentNullException(nameof(result.Resource), "Result Source is null");
         var code = result.StatusCode;

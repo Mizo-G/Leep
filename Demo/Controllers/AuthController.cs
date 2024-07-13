@@ -1,18 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
+using User = Demo.Models.User;
 
 public record SignInRequest(string Email, string Password);
+public record RegisterPasswordRequest(string Id, string Password);
 
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
+    private readonly CosmosDB<User> _db;
+    private readonly CosmosDB<Otp> _dbOtp;
     private readonly AuthService _authService;
 
-    public AuthController(AuthService authService)
+    public AuthController(CosmosContainerFactory containerFactory)
     {
-        _authService = authService;
+        _db = new CosmosDB<User>(containerFactory, "Leep.User");
+        _dbOtp = new CosmosDB<Otp>(containerFactory, "Leep.User");
+        
+        _authService = new AuthService(_db, _dbOtp);
     }
+
 
     [HttpPost("signin")]
     public async Task<IActionResult> SignInWithEmail([FromBody] SignInRequest request)
@@ -94,7 +102,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register-user-password")]
-    public async Task<IActionResult> RegisterPassword([FromBody] SignInRequest request)
+    public async Task<IActionResult> RegisterPassword([FromBody] RegisterPasswordRequest request)
     {
         try
         {

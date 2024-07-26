@@ -1,13 +1,13 @@
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 public class Location
 {
-    [JsonProperty("country")]
-    public string Country  { get; set; }
+    [JsonPropertyName("country")]
+    public string Country { get; set; }
 
-    [JsonProperty("governorate")]
-    public string Governorate  { get; set; }
+    [JsonPropertyName("governorate")]
+    public string Governorate { get; set; }
 
     public Location(string country, string governorate)
     {

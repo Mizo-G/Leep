@@ -1,0 +1,10 @@
+<h1>My name is @Name</h1>
+
+@code{
+    [Parameter] public string Name { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        Name += ",";
+    }
+}

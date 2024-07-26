@@ -2,6 +2,7 @@ using System.Net;
 using Demo.Models;
 using Microsoft.Azure.Cosmos;
 
+//TODO => figure out Testing and Logging.
 public class CosmosDB<T> where T : ICosmosResource
 {
     private readonly Container _container;

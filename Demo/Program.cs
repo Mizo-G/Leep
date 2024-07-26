@@ -1,8 +1,5 @@
-using Newtonsoft.Json;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
-using Microsoft.Azure.Cosmos.Linq;
-using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 

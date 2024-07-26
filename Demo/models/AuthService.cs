@@ -1,23 +1,23 @@
 using System.Security.Cryptography;
+using System.Text.Json.Serialization;
 using Demo.Models;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Azure.Cosmos;
-using Newtonsoft.Json;
 using User = Demo.Models.User;
 
 public class Otp : ICosmosResource
 {
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public string Id { get; set; } = Guid.NewGuid().ToString();
-    [JsonProperty("userId")]
+    [JsonPropertyName("userId")]
     public string UserId { get; set; }
-    [JsonProperty("email")]
+    [JsonPropertyName("email")]
     public string Email { get; set; }
-    [JsonProperty("code")]
+    [JsonPropertyName("code")]
     public string Code { get; set; }
-    [JsonProperty("createdDate")]
+    [JsonPropertyName("createdDate")]
     public DateTime CreatedDate { get; set; }
-    [JsonProperty("docType")]
+    [JsonPropertyName("docType")]
     private string DocType { get; set; } = "otp";
     public int ttl { get; set; }
 
@@ -40,8 +40,8 @@ public class AuthService
 
     public AuthService(CosmosDB<User> db, CosmosDB<Otp> otpdb)
     {
-        _userDb = db; 
-        _otpDb = otpdb; 
+        _userDb = db;
+        _otpDb = otpdb;
     }
 
     public async Task<(User?, string)> LoginInWithEmail(string email, string password)

@@ -1,14 +1,15 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
-public class ContactInfo{
-    [JsonProperty("phoneNumber")]
+public class ContactInfo
+{
+    [JsonPropertyName("phoneNumber")]
     public string? PhoneNumber { get; set; }
-    [JsonProperty("email")]
+    [JsonPropertyName("email")]
     public string? Email { get; set; }
-    [JsonProperty("linkedInProfile")] 
-    public string? LinkedInProfile  { get; set; }
-    [JsonProperty("twitterProfile")]
+    [JsonPropertyName("linkedInProfile")]
+    public string? LinkedInProfile { get; set; }
+    [JsonPropertyName("twitterProfile")]
     public string? Twitter { get; set; }
-    [JsonProperty("instagramProfile")]
-    public string? instagramProfile  { get; set; }
+    [JsonPropertyName("instagramProfile")]
+    public string? instagramProfile { get; set; }
 }

@@ -1,5 +1,4 @@
-using Newtonsoft.Json;
-
+using System.Text.Json.Serialization;
 namespace Demo.Models
 {
     public enum UserType
@@ -15,92 +14,106 @@ namespace Demo.Models
 
     public class User : ICosmosResource
     {
-        [JsonProperty("id")]
+        //TODO => Add Validation tags. 
+        //  and required declarations.  
+        [JsonPropertyName("id")]
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        [JsonProperty("userId")]
-        public string UserId { get; set; } 
-        [JsonProperty("userType")]
+        [JsonPropertyName("userId")]
+        public string UserId { get; set; } = "";
+        [JsonPropertyName("userType")]
         public UserType UserType { get; set; }
-        [JsonProperty("userName")]
+        [JsonPropertyName("userName")]
         public string? UserName { get; set; }
-        [JsonProperty("name")]
-        public string Name { get; set; } = "";
-        [JsonProperty("profileImage")]
+        [JsonPropertyName("firstName")]
+        public string FirstName { get; set; } = "";
+        [JsonPropertyName("lastName")]
+        public string LastName { get; set; } = "";
+        [JsonPropertyName("profileImage")]
         public string? ProfileImage { get; set; }
-        [JsonProperty("interests")]
+        [JsonPropertyName("interests")]
         public List<string>? Interests { get; set; } = new List<string>();
-        [JsonProperty("jobTitle")]
-        public string? JobTitle { get; set; }
-        [JsonProperty("sector")]
+        [JsonPropertyName("jobTitle")]
+        public string JobTitle { get; set; } = "";
+        [JsonPropertyName("sector")]
         public string? Sector { get; set; }
-        [JsonProperty("subSector")]
+        [JsonPropertyName("subSector")]
         public string? SubSector { get; set; }
-        [JsonProperty("yearsOfExperience")]
-        public int? levelOfExperience { get; set; }
-        [JsonProperty("location")]
-        public Location? Location { get; set; }
-        [JsonProperty("aboutMe")]
+        [JsonPropertyName("yearsOfExperience")]
+        public int YearsOfExperience { get; set; } = 0;
+        [JsonPropertyName("country")]
+        public string Country { get; set; } = "";
+        [JsonPropertyName("governorate")]
+        public string Governorate { get; set; } = "";
+        [JsonPropertyName("aboutMe")]
         public string? AboutMe { get; set; }
-        [JsonProperty("introVideo")]
+        [JsonPropertyName("introVideo")]
         public string? introVideo { get; set; }
-        [JsonProperty("previousExperiences")]
+        [JsonPropertyName("previousExperiences")]
         public List<string>? PreviousExperiences { get; set; }
-        [JsonProperty("experiencedIn")]
+        [JsonPropertyName("experiencedIn")]
         public List<string>? ExperiencedIn { get; set; }
-        [JsonProperty("needHelpWith")]
+        [JsonPropertyName("needHelpWith")]
         public List<string>? NeedHelpWith { get; set; }
-        [JsonProperty("contactInfo")]
+        [JsonPropertyName("contactInfo")]
         public ContactInfo? ContactInfo { get; set; }
-        [JsonProperty("keepSocialsPrivate")]
+        [JsonPropertyName("keepSocialsPrivate")]
         public bool keepSocialsPrivate { get; set; } = false;
-        [JsonProperty("keepPersonalInfoPrivate")]
+        [JsonPropertyName("keepPersonalInfoPrivate")]
         public bool keepPersonalInfoPrivate { get; set; } = true;
-        [JsonProperty("emailVerified")]
+        [JsonPropertyName("emailVerified")]
         public bool EmailVerified { get; set; } = false;
-        [JsonProperty("hash")]
+        [JsonPropertyName("hash")]
         public string? Hash { get; set; }
-        [JsonProperty("completionPercentage")]
+        [JsonPropertyName("completionPercentage")]
         public int CompletionPercentage { get; set; }
-        [JsonProperty("createdDate")]
-        public DateTime CreatedDate  { get; set ; } = DateTime.Now;
-        [JsonProperty("docType")]
+        [JsonPropertyName("createdDate")]
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        [JsonPropertyName("docType")]
         public string DocType { get; set; } = "user";
-        public User()
-        {
-            UserId = Id;
-        }
+        [JsonPropertyName("email")]
+        public string Email { get; set; } = "";
 
-        public User(string email)
-        {
-            UserId = Id;
-            ContactInfo = new ContactInfo { Email = email };
-        }
+
+
 
         public (bool, string) IsEssentialInfoFilled()
         {
+            // Unnecessary method, marking the fields as required,
+            // is enough to guarantee Essential Info is Filled.
+            // Add Validation messages as attributes on top of 
+            // every field and return them to the controller.
+            // Or make them nullable and call this method before
+            // adding any: new User();
             var user = this;
-            if (String.IsNullOrWhiteSpace(user.Name)) return (false, $"{nameof(user.Name)} is required, but was not provided");
-            if (String.IsNullOrWhiteSpace(user.UserName)) return (false, $"{nameof(user.UserName)} is required, but was not provided");
+
+            if (String.IsNullOrWhiteSpace(user.FirstName)) return (false, $"{nameof(user.FirstName)} is required, but was not provided");
+            if (String.IsNullOrWhiteSpace(user.LastName)) return (false, $"{nameof(user.LastName)} is required, but was not provided");
+            if (String.IsNullOrWhiteSpace(user.Email)) return (false, $"An email needs to be provided and verified before User can be added");
+            if (String.IsNullOrWhiteSpace(user.Country)) return (false, $"{nameof(user.Country)} is required, but was not provided");
+            if (String.IsNullOrWhiteSpace(user.Governorate)) return (false, $"{nameof(user.Governorate)} is required, but was not provided");
+            if (String.IsNullOrWhiteSpace(user.JobTitle)) return (false, $"{nameof(user.JobTitle)} is required, but was not provided");
             if (!user.EmailVerified) return (false, $"Email needs to be verified.");
-            if (user.ContactInfo is null) return (false, $"An email needs to be provided and verified before User can be added");
-            if (String.IsNullOrWhiteSpace(user.ContactInfo.Email)) return (false, $"An email needs to be provided and verified before User can be added");
 
             return (true, "");
         }
 
         public int CalculateCompletionPercentage()
         {
-            int toComplete = 10;
-            int completed = 0;
+            int toComplete = 7; //currently 7 required params
+
+            // starts at one because YearsOfExprince 
+            // gets initilized to zero which means
+            // it is always valid
+            int completed = 1;
 
             var user = this;
-            if (!String.IsNullOrWhiteSpace(user.Name)) completed++;
-            if (!String.IsNullOrWhiteSpace(user.UserName)) completed++;
-            if (user.EmailVerified) completed++;
-            if (!String.IsNullOrWhiteSpace(user.ContactInfo?.Email)) completed++;
 
-            // TODO =>
-            // add the rest of the feilds later
+            if (!String.IsNullOrWhiteSpace(user.FirstName)) completed++;
+            if (!String.IsNullOrWhiteSpace(user.LastName)) completed++;
+            if (user.EmailVerified) completed++;
+            if (!String.IsNullOrWhiteSpace(user.Country)) completed++;
+            if (!String.IsNullOrWhiteSpace(user.Governorate)) completed++;
+            if (!String.IsNullOrWhiteSpace(user.JobTitle)) completed++;
 
             return completed * 100 / toComplete;
         }

@@ -1,10 +1,10 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 public class SocialMediaLogin
 {
-    [JsonProperty("provider")]
+    [JsonPropertyName("provider")]
     public string Provider { get; set; } = "";
 
-    [JsonProperty("providerUserId")]
+    [JsonPropertyName("providerUserId")]
     public string ProviderUserId { get; set; } = "";
 }

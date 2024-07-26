@@ -3,17 +3,25 @@
 
 <PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
+<h1>Counter =></h1>
 
 <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="DecrementCount">Click me @Name</button>
+<Demo Name="@Name"/>
 
 @code {
-    private int currentCount = 0;
+    private int currentCount = 1;
+    public string Name { get; set; } = default!;
 
-    private void IncrementCount()
+    protected override void OnInitialized(){
+        Name = "Moataz";
+    }
+
+    private void DecrementCount()
     {
-        currentCount++;
+        Name += "Gamal "; 
+        if(currentCount < 1) return;
+        currentCount--;
     }
 }

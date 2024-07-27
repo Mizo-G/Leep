@@ -52,8 +52,7 @@ public class AuthService
 
         if (users.Count == 0) return (null, $"Couldn't find User with Email {email}");
         if (users.Count > 1) return (null, @$"More than one User with Email {email}. 
-                                            Time to Panic! Call an Admin!
-                                            Or make sure Email is correct first.");
+                                            Time to Panic! Call an Admin!");
 
         var user = users.First();
         if (!user.EmailVerified) return (null, "Email not verified.");
@@ -77,12 +76,14 @@ public class AuthService
     public async Task<(bool, string)> RegisterUnverifiedUser(string email)
     {
         bool status;
-        var user = new User(email);
+        var user = new User() { Email = email };
         (status, _) = await _userDb.CreateItem(user, user.UserId);
-        if (!status) return (false, $"Couldn't find user with email {email}");
-        status = await SendOtp(user.Id, email);
+        if (!status) return (false, $"Couldn't create user with email {email}");
+        (status, var code) = await SendOtp(user.Id, email);
+        //resend attempt to resend?
         if (!status) return (false, $"Couldn't send otp to email {email}");
-        return (true, "");
+        //return the code for testing reasons
+        return (true, code);
     }
 
     private string GenerateOtp()
@@ -91,16 +92,16 @@ public class AuthService
         return random.Next(100_000, 1_000_000).ToString(); //6 digits
     }
 
-    private async Task<bool> SendOtp(string userId, string email)
+    private async Task<(bool, string)> SendOtp(string userId, string email)
     {
         bool status;
         var code = GenerateOtp();
         var otp = new Otp(userId, email, code);
         (status, _) = await _otpDb.CreateItem(otp, otp.UserId);
-        return status;
+        return (status, otp.Code);
     }
 
-    public async Task<bool> ResendOtp(string userId, string email)
+    public async Task<(bool, string)> ResendOtp(string userId, string email)
     {
         bool status;
         var query = new QueryDefinition(
@@ -108,12 +109,16 @@ public class AuthService
         ).WithParameter("@uid", userId);
         var otps = await _otpDb.QueryItems(query);
         var oldOtp = otps.First();
-        if (oldOtp is null) return false;
+        if (oldOtp is null) return (false, $"couldn't find otp for email {email}");
+        var timePassed = DateTime.UtcNow - oldOtp.CreatedDate;
+        //commented for testing purposes, uncomment later 
+        //if (timePassed.Seconds < 60) return (false, $"Please wait 60 seconds before attempting to resend the otp");
         var code = GenerateOtp();
         var otp = new Otp(userId, email, code);
         otp.Id = oldOtp.Id;
         (status, _) = await _otpDb.UpdateItem(oldOtp.Id, oldOtp.UserId, otp);
-        return status;
+        //return otp for testing reasons
+        return (status, otp.Code);
     }
 
     public async Task<bool> VerifyOtp(string userId, string code)
@@ -132,7 +137,7 @@ public class AuthService
     {
         var user = await _userDb.ReadItem(userId, userId);
         if (user == null) return false;
-
+        //TODO => add more validation to the password i.e. more than 8 letters.
         user.Hash = HashPassword(password);
 
         var (status, _) = await _userDb.UpdateItem(user.Id, userId, user);

@@ -17,7 +17,7 @@ public class AuthController : ControllerBase
     {
         _db = new CosmosDB<User>(containerFactory, "Leep.User");
         _dbOtp = new CosmosDB<Otp>(containerFactory, "Leep.User");
-        
+
         _authService = new AuthService(_db, _dbOtp);
     }
 
@@ -58,14 +58,15 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var (status, err) = await _authService.RegisterUnverifiedUser(email);
-            if (!status) return BadRequest($"Failed to register user. Reason: {err}");
-            return Ok();
+            var (status, codeOrErr) = await _authService.RegisterUnverifiedUser(email);
+            if (!status) return BadRequest($"Failed to register user. Reason: {codeOrErr}");
+            //return code to the client for testing 
+            return Ok(codeOrErr);
         }
         catch (CosmosException ce)
         {
             Console.WriteLine(ce.Message);
-            return BadRequest($"A database exception occured while deleting data {ce.Message}");
+            return BadRequest($"A database exception occured while registering user {ce.Message}");
         }
         catch (ArgumentNullException e)
         {
@@ -77,19 +78,20 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpPost("resendotp/{id}")]
-    public async Task<IActionResult> ResendOtp(string id, [FromBody] string email)
+    [HttpPost("resendotp/{userId}")]
+    public async Task<IActionResult> ResendOtp(string userId, [FromBody] string email)
     {
         try
         {
-            var status = await _authService.ResendOtp(id, email);
-            if (!status) return BadRequest("Failed to register user");
-            return Ok();
+            var (status, code) = await _authService.ResendOtp(userId, email);
+            if (!status) return BadRequest($"Failed to resend otp to email: {email}");
+            //return code to client for testing
+            return Ok(code);
         }
         catch (CosmosException ce)
         {
             Console.WriteLine(ce.Message);
-            return BadRequest($"A database exception occured while deleting data {ce.Message}");
+            return BadRequest($"A database exception occured while resending otp {ce.Message}");
         }
         catch (ArgumentNullException e)
         {
@@ -114,7 +116,7 @@ public class AuthController : ControllerBase
         catch (CosmosException ce)
         {
             Console.WriteLine(ce.Message);
-            return BadRequest($"A database exception occured while deleting data {ce.Message}");
+            return BadRequest($"A database exception occured while registering password {ce.Message}");
         }
         catch (ArgumentNullException e)
         {
@@ -126,22 +128,22 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpPost("verify/{id}")]
-    public async Task<IActionResult> VerifyEmail(string id, [FromBody] string code)
+    [HttpPost("verify/{userId}")]
+    public async Task<IActionResult> VerifyEmail(string userId, [FromBody] string code)
     {
         try
         {
             bool status;
-            status = await _authService.VerifyOtp(id, code);
+            status = await _authService.VerifyOtp(userId, code);
             if (!status) return Forbid("Failed to verify otp");
-            status = await _authService.VerifyEmail(id);
+            status = await _authService.VerifyEmail(userId);
             if (!status) return BadRequest("Failed to verify email");
             return Ok();
         }
         catch (CosmosException ce)
         {
             Console.WriteLine(ce.Message);
-            return BadRequest($"A database exception occured while deleting data {ce.Message}");
+            return BadRequest($"A database exception occured while verifying data {ce.Message}");
         }
         catch (ArgumentNullException e)
         {

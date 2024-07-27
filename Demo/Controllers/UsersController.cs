@@ -73,8 +73,7 @@ public class UsersController : ControllerBase
         {
             bool status;
             (status, var err) = item.IsEssentialInfoFilled();
-            if (!status) return BadRequest($"{err}. Please provied all required inforamation.");
-            item.CompletionPercentage = item.CalculateCompletionPercentage();
+            if (!status) return BadRequest($"{err}. Please provide all required inforamation.");
             (status, var result) = await _db.CreateItem(item, item.UserId);
             if (!status) return BadRequest("Failed to Create Item");
             return Ok(result?.Id);
@@ -100,8 +99,9 @@ public class UsersController : ControllerBase
         {
             bool status;
             (status, var err) = item.IsEssentialInfoFilled();
-            if (!status) return BadRequest($"{err}. Please provied all required inforamation.");
-            item.CompletionPercentage = item.CalculateCompletionPercentage();
+            if (!status) return BadRequest($"{err}. Please provide all required inforamation.");
+            var oldItem = await _db.ReadItem(id, partitionKey);
+            item.CopyEssentialData(oldItem);
             (status, var result) = await _db.UpdateItem(id, partitionKey, item);
             if (!status) return BadRequest("Failed to Update Item");
             return Ok(result?.Id);
